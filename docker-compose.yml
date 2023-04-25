@@ -1,0 +1,32 @@
+version: '3'
+services:
+  yapi:
+    image: weaming/yapi:latest
+    container_name: yapi
+    environment:
+      # https://registry.npmmirror.com/yapi-vendor/
+      - VERSION=1.12.0
+      - HOME=/home
+      - PORT=3000
+      - ADMIN_EMAIL=admin
+      - DB_SERVER=mongo
+      - DB_NAME=yapi
+      - DB_PORT=27017
+    restart: always
+    ports:
+      - :3000:3000
+    volumes:
+      - ~/data/yapi/log:/home/log
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    entrypoint: "bash /wait-for-it.sh mongo:27017 -- entrypoint.sh"
+  mongo:
+    image: mongo:5.0
+    container_name: mongo
+    restart: always
+    ports:
+      - :27017:27017
+    volumes:
+      - ~/data/yapi/mongodb:/data/db
